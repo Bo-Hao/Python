@@ -123,17 +123,17 @@ class Game(Tk.Frame):
         self.paddle = Paddle(self.canvas, self.width/2, 326)
         self.items[self.paddle.item] = self.paddle
         for x in range(5, self.width - 5, 75):
-            self.add_brick(x + 37.5, 50, 2)
-            self.add_brick(x + 37.5, 70, 1)
+            self.add_brick(x + 37.5, 50, 3)
+            self.add_brick(x + 37.5, 70, 2)
             self.add_brick(x + 37.5, 90, 1)
             
         self.hud = None
         self.setup_game()
         self.canvas.focus_set()
         self.canvas.bind('<Left>',
-                         lambda _: self.paddle.move(-10))
+                         lambda _: self.paddle.move(-30))
         self.canvas.bind('<Right>',
-                         lambda _: self.paddle.move(10))
+                         lambda _: self.paddle.move(30))
         
  
     
