@@ -13,9 +13,7 @@ class Clickit():
         self.coordinate = []
         self.image_information = []
         self.draw_set = []
-    
-        
-                
+
     def clickfun(self):
         def onclick(event):
             if event.xdata != None and event.ydata != None :
@@ -43,4 +41,30 @@ class Clickit():
         #fig.canvas.mpl_connect("key_press_event", onclick)
         plt.show()
         return self.coordinate, np.array(image_object).shape
+    
+class Epipolar:
+    def __init__(self, points_1, points_2):
+        self.pt1 = points_1
+        self.pt2 = points_2
+
+    def epipolar(self):
+        A = [[self.pt1[k][i]*self.pt2[k][j]for i in np.arange(3)for j in np.arange(3)]for k in np.arange(len(self.pt1))]
+        A = np.array(A)
+        U, D, Vt = np.linalg.svd(A)
+        u, d, vt = np.linalg.svd(np.reshape(Vt[-1], (3, 3)))
+        d = np.diag([d[0], d[1], 0])
+        F = np.dot(np.dot(u, d), v)
+        return F
+    
+    
         
+        
+        
+        
+        
+        
+        
+    
+    
+    
+    

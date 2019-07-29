@@ -35,4 +35,9 @@ class Solution:
         return dum.next
     
 
+a = ListNode(10)
+b = ListNode(9)
+
         
+S = Solution()
+ans=S.mergeTwoList(a, b)
