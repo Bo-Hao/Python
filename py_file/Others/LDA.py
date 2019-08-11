@@ -58,5 +58,6 @@ if '__main__' == __name__:
     X_new = np.dot((X), W)
     plt.figure(1)
     plt.scatter(X_new[:, 0], X_new[:, 1], marker='o', c=y)
+    plt.show()
 
     

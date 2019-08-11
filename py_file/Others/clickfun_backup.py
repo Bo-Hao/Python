@@ -18,4 +18,4 @@ def clickfun(img):
 
 
 if __name__=='__main__':
-	pass
+	clickfun('/Users/pengbohao/Downloads/2019summer/IMG_2881.JPG')
