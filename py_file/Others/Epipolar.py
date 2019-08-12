@@ -3,22 +3,23 @@ import pickle
 import cv2
 import matplotlib.pyplot as plt
 import itertools
-import heapq
+
 
 
 class Epipolar:
     def __init__(self, points_1, points_2):
         self.pt1 = [[points_1[i][0], points_1[i][1], 1]for i in range(len(points_1))]
         self.pt2 = [[points_2[i][0], points_2[i][1], 1]for i in range(len(points_2))]
-        self.ransac = 500
+        self.ransac = 20000
         self.distance = 3
         #log(1-(1-p))/log(1-p**8)
         
     def epipolar(self, method = '8points'):
         if len(self.pt1) != len(self.pt2):
             print("Can't make pairs ")
-        if method == '8points':
-            A = [[self.pt1[k][i]*self.pt2[k][j] for j in range(3) for i in range(3)]for k in range(len(self.pt1))]
+            
+        def findfundamentalmatrix(p1, p2):
+            A = [[p1[k][i] * p2[k][j] for j in range(3) for i in range(3)]for k in range(len(p1))]
             A = np.array(A)
             U, D, Vt = np.linalg.svd(A)
             u, d, vt = np.linalg.svd(np.reshape(Vt[-1], (3, 3)))
@@ -26,60 +27,46 @@ class Epipolar:
             F = np.dot(np.dot(u, d), vt)
             return F
         
+        def point2epiline(point, line):
+            x, y = point[0], point[1]
+            a, b, c = line[0], line[1], line[2]
+            return abs(a*x + b*y + c)/(a**2 + b**2)**0.5, [a, b, c]
+
+        if method == '8points':
+            F = findfundamentalmatrix(self.pt1, self.pt2)
+            return F
+        
         elif method == 'RANSAC':
-            def point2epiline(point, line):
-                x, y = point[0], point[1]
-                a, b, c = line[0], line[1], line[2]
-                return abs(a*x + b*y + c)/(a**2 + b**2)**0.5, [a, b, c]
-            
             choice = list(itertools.combinations(np.arange(len(self.pt1)), 10))
             ran = np.random.randint(len(choice), size = self.ransac)
-            record = []
-            #inlier = [0 for i in range(len(self.pt1))]
+            score = []
+            inlier = [0 for i in range(len(self.pt1))]
             for c_ in ran:
-                A = [[self.pt1[k][i]*self.pt2[k][j] for j in range(3) for i in range(3)]for k in choice[c_]]
-                A = np.array(A)
-                U, D, Vt = np.linalg.svd(A)
-                u, d, vt = np.linalg.svd(np.reshape(Vt[-1], (3, 3)))
-                d = np.diag([d[0], d[1], 0])
-                F = np.dot(np.dot(u, d), vt)
-                p1 = np.array(self.pt1) 
-                p2 = np.array(self.pt2)
-                
-                inlier = [0 for i in range(len(p1))]
+                train_p1 = [self.pt1[i] for i in choice[c_]]
+                train_p2 = [self.pt2[i] for i in choice[c_]]
+                test_p1 = np.array([self.pt1[i] for i in range(len(self.pt1)) if i not in choice[c_]])
+                test_p2 = np.array([self.pt2[i] for i in range(len(self.pt2)) if i not in choice[c_]])
+                F = findfundamentalmatrix(train_p1, train_p2)
                 prev_line = 0
-                punish = 0
-                total_dist = 0
-                for i_ in range(len(p1)):
-                    distance_1,line_1 = point2epiline(p1[i_], np.dot(F.T, p2[i_]))
-                    distance_2,line_2 = point2epiline(p2[i_], np.dot(F, p1[i_]))
+                for i_ in range(len(test_p1)):
+                    distance_1,line_1 = point2epiline(test_p1[i_], np.dot(F.T, test_p2[i_]))
+                    distance_2,line_2 = point2epiline(test_p2[i_], np.dot(F, test_p1[i_]))
+                    if prev_line == 0:
+                        prev_line = line_1
                     
-                    if abs(distance_1 - distance_2) < self.distance:
-
-                        if prev_line != 0:
-                            if abs(prev_line[0]/line_1[0] - prev_line[1]/line_1[1]) <= 0.002:
-                                prev_line = line_1
-                                print("warning!")
-                                punish = 1
-                            else:
-                                inlier[i_] += 1
-                                total_dist += distance_1
+                    else:
+                        if abs(prev_line[0]/line_1[0] - prev_line[1]/line_1[1]) < 0.02:
+                            pass
                         else:
-                            prev_line = line_1
-                            inlier[i_] += 1
-                            total_dist += distance_1
-                if punish == 0:
-                    in_index = [k for k in range(len(inlier)) if inlier[k] == 1]
-                    print(total_dist)
-                    record.append([sum(inlier), F, in_index, total_dist])
-            record = sorted(record, key = lambda x:x[3])
-            F = record[0][1]
-                     
-                
-        
-            
-            
-            
+                            if distance_1 == 0 :
+                                inlier[i_] += 1
+                inlier_index = [i for i in range(len(inlier)) if inlier[i] == 0.3]
+                score.append([sum(inlier), F, list(inlier_index) + list(choice[c_])])
+            score = sorted(score, key = lambda x: x[0])
+            score[-1][-1]
+            F = score[-1][1]
+            #fina_p1 = [self.pt1[i] for i in score[0][-1]]
+            #fina_p2 = [self.pt2[i] for i in score[0][-1]]
             return F
                 
 
@@ -161,25 +148,21 @@ def main():
     p1 = np.array([[p1[i][0], p1[i][1], 1]for i in range(len(p1)) if i not in bad])
     p2 = np.array([[p2[i][0], p2[i][1], 1]for i in range(len(p2)) if i not in bad])
     
-    E1 = Epipolar(p1, p2)
+    #E1 = Epipolar(p1, p2)
     #E2 = Epipolar(pt1, pt2)
     
-    F1 = E1.epipolar(method = 'RANSAC')
+    #F1 = E1.epipolar(method = 'RANSAC')
     #F2 = E2.epipolar()
     
     Fcv2_1, mask = cv2.findFundamentalMat(p1, p2, method = cv2.RANSAC)
     #Fcv2_2 = cv2.findFundamentalMat(pt1, pt2, method = cv2.FM_8POINT)
     
-    for i_ in range(len(p1)):
-        ans = np.dot(np.dot(p2[i_].T, F1), p1[i_])
-
-        print(mask[i_], ans)
 
     
     #Es1 = np.dot(np.dot(I, F1), I.T)
     #Escv2_1 = np.dot(np.dot(I, Fcv2_1[0]), I)    
-    drawepiline(F1.T, p2, p1, im2)
-    drawepiline(F1, p1, p2, im1)
+    drawepiline(Fcv2_1.T, p2, p1, im2)
+    drawepiline(Fcv2_1, p1, p2, im1)
 
     
 record = main()  
