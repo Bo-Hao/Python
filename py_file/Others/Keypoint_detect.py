@@ -6,8 +6,8 @@ class KeypointsDetect():
     def __init__(self, image1, image2):
         self.image1 = image1
         self.image2 = image2
-        img1 = cv2.imread(image1)
-        img2 = cv2.imread(image2)
+        img1 = cv2.imread(image1, 0)
+        img2 = cv2.imread(image2, 0)
         self.imgQ = img1
         self.imgT = img2
         self.bool = 1 if image2 == None else 0
@@ -150,10 +150,10 @@ if __name__ == "__main__":
     #image_address1 = '/Users/pengbohao/Downloads/碩士班大頭貼.jpg'
     #image_address2 = '/Users/pengbohao/Downloads/高中大頭貼.jpg'
     K = KeypointsDetect(image_address1, image_address2)
-    K.ORB()
+    K.SUFT()
 
     K.match()
-    K.drawmatch(N = 10)
+    K.drawmatch(N = 32)
     
 
 

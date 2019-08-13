@@ -94,8 +94,8 @@ def imageinfo(pixel, focus_length, real_size):
     # camera_matrix = np.dot(intrinsic_matrix, extrinsic_matrix)
     return intrinsic_matrix
 
-def drawepiline(F, pt1, pt2, im1):        
-    epline = [np.dot(F.T, pt2[i])for i in range(len(pt2))]
+def drawepiline(F, pt1, pt2, im1, N = 30):        
+    epline = [np.dot(F.T, pt2[i])for i in range(N)]
     shape = np.array(im1).shape
     pa, pb = [], []
     
@@ -118,9 +118,9 @@ def drawepiline(F, pt1, pt2, im1):
         plt.plot([pa[i][0], pb[i][0]], [pa[i][1], pb[i][1]])
     pa = np.array(pa)
     pb = np.array(pb)
-    plt.scatter(pa[:, 0], pa[:, 1])
-    plt.scatter(pb[:, 0], pb[:, 1])
-    plt.scatter(pt1.T[0], pt1.T[1], c = 'red', s = 1)
+    #plt.scatter(pa[:, 0], pa[:, 1])
+    #plt.scatter(pb[:, 0], pb[:, 1])
+    #plt.scatter(pt1.T[0], pt1.T[1], c = 'red', s = 1)
     plt.ylim(shape[0], 0)
     plt.xlim(0, shape[1])
     plt.show()
@@ -165,4 +165,4 @@ def main():
     drawepiline(Fcv2_1, p1, p2, im1)
 
     
-record = main()  
+
