@@ -40,6 +40,7 @@ class MyMDS:
                 plt.scatter(self.Z.T[0], self.Z.T[1])
             else:
                 plt.scatter(self.Z.T[0], self.Z.T[1], c = target)
+            plt.title('MDS')
             plt.show()
         else:
             print("Not 2D")

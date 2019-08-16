@@ -21,6 +21,7 @@ class SVM:
     def predict(self, x):
         self.x = x
         self.prediction = self.S.predict(x)
+        return self.prediction
         
     def draw(self):
         plt.scatter(self.x[:, 0], self.x[:, 1], c = self.prediction)

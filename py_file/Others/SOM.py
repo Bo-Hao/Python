@@ -7,8 +7,12 @@ import matplotlib.pyplot as plt
 
 class SOM:
     def __init__(self, dataset):
-        self.data = dataset
+        self.data = copy.copy(dataset)
         self.T = 50 
+        
+        
+        
+    def init(self, n, m):
         def cal2NF(X):#計算向量的二範數
             res = 0
             for x in X:
@@ -18,8 +22,6 @@ class SOM:
         def eta(t,N):
             return (0.3/(t+1))* (math.e ** -N)
         
-        
-    def init(self, n, m):
         self.n = n
         self.m = m
         d = len(self.data[0])
