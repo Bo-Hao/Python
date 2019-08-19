@@ -7,7 +7,7 @@ from sklearn.neighbors import KNeighborsClassifier
 import numpy as np
 import tensorflow.keras as tf
 
-epochs = 6
+epochs = 10
 
 
 iris = datasets.load_iris()
@@ -25,6 +25,10 @@ for i in range(30):
 
     model = tf.models.Sequential([ 
         tf.layers.Dense(4, activation = 'tanh'), 
+        tf.layers.Dense(100, activation = 'tanh'),
+        tf.layers.Dense(100, activation = 'tanh'),
+        tf.layers.Dense(100, activation = 'tanh'),
+        tf.layers.Dense(100, activation = 'tanh'),
         tf.layers.Dense(100, activation = 'tanh'),
         tf.layers.Dense(100, activation = 'tanh'),
         tf.layers.Dense(3, activation = 'softmax')
@@ -56,4 +60,4 @@ for i in range(30):
     R(res)
 
 print(result)
-print(sum(result)/len(result))'''
+print(sum(result)/len(result))‘’‘
