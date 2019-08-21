@@ -11,7 +11,7 @@ class Simple_classfyNN:
         
         inputshape = np.array(self.X).shape[1:]
         groups = len(set(self.Y))
-        
+        print(inputshape)
         self.model = tf.keras.models.Sequential([
                 tf.keras.layers.Flatten(input_shape = inputshape), 
                 tf.keras.layers.Dense(128, activation = 'relu'), 
