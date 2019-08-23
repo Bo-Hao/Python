@@ -1,5 +1,5 @@
 from env import GrowUp
-from fix_Q import FixedQ
+from Double import DoubleQ
 import numpy as np
 import tensorflow.keras as tf 
 import copy

@@ -1,6 +1,4 @@
 import numpy as np 
-import pickle
-
 
 class GrowUp:
     def __init__(self, num = 2, fin_step = 5):
