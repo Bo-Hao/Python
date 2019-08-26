@@ -1,5 +1,5 @@
 from env import GrowUp
-from Double import DoubleQ
+from Dualing import DualingQ
 import numpy as np
 import tensorflow.keras as tf 
 import copy
@@ -23,14 +23,16 @@ def update():
             if done:
                 #RL.epsilon += 0.001
                 break
-        RL.dump = copy.copy(RL.fq_model)
+        RL.dump = copy.copy(RL.model)
         RL.epsilon += 0.0001
     
+
+
 
     G = GrowUp()
     print("---------------test---------------")
     for i in range(env.fin_step):
-        q_table = RL.fq_model.predict([i])
+        q_table = RL.model.predict([i])
         G.step(np.argmax(q_table))
         print(np.argmax(q_table))
     print(G.score)
@@ -39,7 +41,7 @@ def update():
     
 if __name__ == "__main__":
     env = GrowUp()
-    RL = DoubleQ(actions=list(range(env.n_actions)))
+    RL = DualingQ(actions=list(range(env.n_actions)))
     update()
     print(RL.count)
     

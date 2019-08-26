@@ -1,20 +1,23 @@
-from env import GrowUp
-from Double import DoubleQ
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+from env import Env
+from Brain import NoisyQ
 import numpy as np
-import tensorflow.keras as tf 
+import tensorflow as tf 
 import copy
 
+
 def update():
-    for episode in range(1000):
+    for episode in range(500):
         # initial observation
         s = 0
-        env = GrowUp()
+        E = Env()
         while True:
             # RL choose action based on observation
             action = RL.choose_action(s)
-            print("action= ", action)
             # RL take action and get next observation and reward
-            s_, reward, done = env.step(action)
+            s_, reward, done = E.step(action)
+            print(action, reward)
             # RL learn from this transition
             RL.learn(s, action, reward, s_)
             # swap observation
@@ -23,24 +26,23 @@ def update():
             if done:
                 #RL.epsilon += 0.001
                 break
-        RL.dump = copy.copy(RL.fq_model)
-        RL.epsilon += 0.0001
-    
-
-    G = GrowUp()
+        if episode %10 == 0:
+            RL.dump_model = copy.copy(RL.model)
+            
+        
+    E = Env()
     print("---------------test---------------")
-    for i in range(env.fin_step):
-        q_table = RL.fq_model.predict([i])
-        G.step(np.argmax(q_table))
+    RL.m.bias_noisy = False
+    RL.m.weight_noisy = False
+    for i in range(E.final_step):
+        q_table = RL.model.predict([i])
+        E.step(np.argmax(q_table))
         print(np.argmax(q_table))
-    print(G.score)
+    print(E.score)
 
-
-    
 if __name__ == "__main__":
-    env = GrowUp()
-    RL = DoubleQ(actions=list(range(env.n_actions)))
+    env = Env()
+    RL = NoisyQ(actions=list(range(env.n_actions)))
     update()
-    print(RL.count)
     
     

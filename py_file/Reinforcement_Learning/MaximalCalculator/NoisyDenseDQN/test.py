@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
+'''from __future__ import absolute_import, division, print_function, unicode_literals
 import tensorflow as tf
 
 
@@ -87,3 +87,7 @@ class Dueling_model():
         model.compile(loss='mse', optimizer=Adam(lr=0.001))
         
         return model
+'''
+
+import tensorflow as tf
+print(tf.executing_eagerly())

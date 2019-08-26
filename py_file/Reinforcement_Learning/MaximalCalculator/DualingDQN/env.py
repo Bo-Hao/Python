@@ -28,7 +28,10 @@ class GrowUp:
             reward = self.score - tmp
 
         else:
-            reward = self.score - tmp
+            if tmp >= self.score:
+                reward = self.score - tmp
+            else:
+                reward = self.score - tmp
 
             done = False
         self.ini_step += 1
