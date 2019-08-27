@@ -24,12 +24,12 @@ class NoisyDense(tf.keras.layers.Layer):
         self.mu_w = tf.Variable(initial_value=mu_init(shape=(units,units),
         dtype='float32'),trainable=True)
         self.sigma_w = tf.Variable(initial_value=sigma_init(shape=(units,units),
-        dtype='float32'),trainable=False)
+        dtype='float32'),trainable=True)
         # mu + sigma * epsilon for bias
         self.mu_bias = tf.Variable(initial_value=mu_bias_init(shape=(units,),
         dtype='float32'),trainable=True)
         self.sigma_bias = tf.Variable(initial_value=sigma_bias_init(shape=(units,),
-        dtype='float32'),trainable=False)
+        dtype='float32'),trainable=True)
         
     def call(self, inputs):
         #是訓練階段給高斯雜訊，不是就把epsilon設0

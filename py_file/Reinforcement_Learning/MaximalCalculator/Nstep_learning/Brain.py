@@ -5,12 +5,12 @@ import numpy as np
 from build_model import Build_Model
 
 class NoisyQ:
-    def __init__(self, actions, gamma=0.8, e_greedy = 0.9):
+    def __init__(self, actions, gamma=0.95, e_greedy = 0.9):
         self.actions = actions  # a list
         self.gamma = gamma
         self.epsilon = e_greedy
         self.record = []
-        self.lr = 0.5
+        self.lr = 0.4
         self.count = 0
 
         self.m = Build_Model(1, 10, len(actions))
@@ -32,27 +32,25 @@ class NoisyQ:
     def learn(self, s, a, r, s_):
         batch = 50
         record_size = 100
-
+        
         q_list = self.model.predict([s])[0]
         q_predict = q_list[a]
         qvalue = self.dump_model.predict([s_])[0][np.argmax(q_list)]
+        #q_target = r + self.gamma * qvalue
+        loss = qvalue - q_list[a]
+        q_list[a] = r + self.gamma * qvalue  # update
 
 
 
-        loss = r + (self.gamma * qvalue - q_predict)
-        
-        #q_list[a] += self.lr * loss  # update
-        q_list[a] += loss 
+
         self.record.append([s, a, r, s_, q_list, loss])
         self.count += 1
-
-
-
         if len(self.record) > record_size:
             self.record = self.record[-record_size:]
 
         if self.count % record_size == 0:
             ind = np.random.choice(range(record_size), size = batch)
+            print(ind)
             Train = [self.record[i] for i in ind]
 
             X_train = np.array(Train)[:, 0]
@@ -62,5 +60,5 @@ class NoisyQ:
 
             self.m.noise.epsilon = 0
             print(self.model.predict([s])[0])
-\
+
 

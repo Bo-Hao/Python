@@ -9,7 +9,6 @@ class Build_Model():
         self.neurons = neurons
         self.action_size = action_size
         self.lr = 0.1
-        
 
         state_input = tf.keras.layers.Input(shape=(self.state_size, ))
         D1 = tf.keras.layers.Dense(self.neurons, activation='tanh')(state_input)
@@ -20,8 +19,8 @@ class Build_Model():
         #dueling
         d3_a = tf.keras.layers.Dense(self.neurons/2, activation='sigmoid')(d2)
         d3_v = tf.keras.layers.Dense(self.neurons/2, activation='sigmoid')(d2)
-        a = tf.keras.layers.Dense(self.action_size,activation='sigmoid')(d3_a)
-        value = tf.keras.layers.Dense(1,activation='sigmoid')(d3_v)
+        a = tf.keras.layers.Dense(self.action_size,activation='linear')(d3_a)
+        value = tf.keras.layers.Dense(1,activation='linear')(d3_v)
         a_mean = tf.keras.layers.Lambda(lambda x: tf.keras.backend.mean(x, axis=1, keepdims=True))(a)
         advantage = tf.keras.layers.Subtract()([a, a_mean])
         q = tf.keras.layers.Add()([value, advantage])
