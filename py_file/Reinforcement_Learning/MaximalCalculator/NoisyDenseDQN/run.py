@@ -8,7 +8,7 @@ import copy
 
 
 def update():
-    for episode in range(500):
+    for episode in range(300):
         # initial observation
         s = 0
         E = Env()

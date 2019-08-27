@@ -28,9 +28,9 @@ class Env:
 
         else:
             if tmp >= self.score:
-                reward = -1 + self.score - tmp
+                reward = -0.1 + self.score - tmp
             else:
-                reward = 1 + self.score - tmp
+                reward = 0.1 + self.score - tmp
             done = False
 
         self.initial_step += 1
