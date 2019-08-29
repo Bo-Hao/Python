@@ -9,7 +9,7 @@ import copy
 
 def update():
     for episode in range(300):
-        # initial observation
+        # initial state
         s = 0
         E = Env()
         while True:
@@ -19,7 +19,7 @@ def update():
             s_, reward, done = E.step(action)
             print(action, reward)
             # RL learn from this transition
-            RL.learn(s, action, reward, s +2) # Multi-steps learning +2 so, N-2
+            RL.learn(s, action, reward, s + 2) # Multi-steps learning +2 so, N-2
             # swap observation
             s = s_
             # break while loop when end of this episode
