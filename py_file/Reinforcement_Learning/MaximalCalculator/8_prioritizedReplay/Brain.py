@@ -46,6 +46,8 @@ class NoisyQ:
             Train = copy.copy(batch)
             X_train = np.array(Train)[:, 0]
             Y_train = np.array([i for i in np.array(Train)[:, 4]])
+            print(X_train.shape)
+            print(Y_train.shape)
             self.model.fit(X_train, Y_train, epochs = self.epochs)
 
             # update prioritized experience
