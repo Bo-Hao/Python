@@ -29,3 +29,12 @@ class Build_Model():
         #最後compile
         self.model = tf.keras.models.Model(inputs = state_input, outputs = q)
         self.model.compile(loss = 'mse', optimizer = tf.optimizers.Adam(lr = self.lr))
+
+if __name__ == "__main__":
+    N = Build_Model(1, 10, 4)
+    model = N.model
+    import time
+    t = time.time()
+    print(model.predict([1]))
+    
+    print("total time cost: ", time.time() - t)

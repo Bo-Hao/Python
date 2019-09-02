@@ -1,12 +1,8 @@
 ##################################################
-# 
-#
 # memory = Memory(capacity)
 # memory.add(value, data)
 # batch, index, is_weight = memory.sample(size)
 # memory.update(index, new_value)
-# 
-#
 ##################################################
 import random
 import numpy as np

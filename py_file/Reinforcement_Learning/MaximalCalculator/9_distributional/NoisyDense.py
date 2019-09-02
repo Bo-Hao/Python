@@ -41,7 +41,9 @@ class NoisyDense(tf.keras.layers.Layer):
         else:
             epsilon_w = 0
             epsilon_b = 0 
+
         weights = tf.add(self.mu_w, tf.multiply(self.sigma_w, epsilon_w))
         bias = tf.add(self.mu_bias, tf.multiply(self.sigma_bias, epsilon_b))
-        return self.activation_function(tf.matmul(inputs, weights) + bias)
-       
+        result = self.activation_function(tf.matmul(inputs, weights) + bias)
+        return result
+

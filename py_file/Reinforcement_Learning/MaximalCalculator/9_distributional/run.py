@@ -14,20 +14,21 @@ def update():
         E = Env()
         while True:
             # RL choose action based on observation
-            action = RL.choose_action(s)
+            a = RL.choose_action(s)
             # RL take action and get next observation and reward
-            s_, reward, done = E.step(action)
-            print(action, reward)
+            s, a, r, s_, done = E.step(a)
+            print("do:", a, ', get:', r)
             # RL learn from this transition
-            RL.learn(s, action, reward, s) # Multi-steps learning +2 so, N-2
+            multi_step = s_ -1 + 1
+            RL.learn(s, a, r, multi_step, done) # Multi-steps learning +2 so, N-2
             # swap observation
             s = s_
             # break while loop when end of this episode
             if done:
                 #RL.epsilon += 0.001
                 break
-        if episode %10 == 0:
-            RL.dump_model = copy.copy(RL.model)
+        if episode %30 == 0:
+            RL.dump_model.set_weights(RL.model.get_weights())
             
         
     E = Env()
@@ -46,8 +47,12 @@ def update():
     print(E.score)
 
 if __name__ == "__main__":
+    import time
+    t = time.time()
+
     env = Env()
     RL = DistributionalRL(actions=list(range(env.n_actions)))
     update()
-    
+
+    print("total time cost: ", time.time() - t)
     
