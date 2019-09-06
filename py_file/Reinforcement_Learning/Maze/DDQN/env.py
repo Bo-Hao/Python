@@ -1,41 +1,64 @@
-import copy 
+import numpy as np 
+
+
+
 class Env:
-    def __init__(self, number = 2, final_step = 5):
-        self.number = number
-        self.final_step = final_step
-        self.action_space = ['+', '-', '*', '/']
+    def __init__(self):
+        # ['up', 'down', 'left', 'right']
+        self.action_space = [0, 1, 2, 3]
         self.n_actions = len(self.action_space)
-        self.initial_step = 0
-        self.score = 0
+        self.state = [0, 0]
+        self.step_num = 0
+
+        self.badpoint = [[1, 2], [2, 1]] 
+        self.goal = [[2, 2]]
         
-    def step(self, action):
-        tmp = copy.copy(self.score)
-        if action == 0:
-            self.score += self.number
-        elif action == 1:
-            self.score -= self.number
-        elif action == 2:
-            self.score = self.number * self.score
-        elif action == 3:
-            self.score = self.score / self.number
-        '''elif action == 4:
-            self.score = self.score**self.num'''
+        self.map = np.array([[0 for i in range(4)] for j in range(4)])
+        for i in self.badpoint:
+            self.map[i[0]][i[1]] = -1
+        for i in self.goal:
+            self.map[i[0]][i[1]] = 1
+
+    def return_s(self):
+        return self.state
         
-        # reward function
-        if self.initial_step == self.final_step - 1:
+    def step(self, a):
+        self.step_num += 1
+        s = self.state
+        r = 0
+
+        if a == 0: # up
+            self.state[1] -= 1
+        elif a == 1: # down
+            self.state[1] += 1
+        elif a == 2: # left
+            self.state[0] -= 1
+        elif a == 3: # right
+            self.state[0] += 1
+
+        
+        if self.state in self.badpoint:
             done = True
-            reward = self.score - tmp
-
+            r = -1
+        elif self.state in self.goal:
+            done = True
+            r = 1
+        elif self.state[0] > 3 or self.state[0] < 0:
+            done = True
+            r = -1
+        elif self.state[1] > 3 or self.state[1] < 0:
+            done = True
+            r = -1
         else:
-            if tmp >= self.score:
-                reward = -0.1 + self.score - tmp
-            else:
-                reward = 0.1 + self.score - tmp
             done = False
+            r = 0
+        
 
-        self.initial_step += 1
-        s_ = self.initial_step
+        s_ = self.state
 
-        return s_, reward, done        
+        return s, a, r, s_, done
+
+
+
 
     

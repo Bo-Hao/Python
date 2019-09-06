@@ -1,48 +1,52 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
-
 from env import Env
-from Brain import NoisyQ
+from agent import Agent
 import numpy as np
 import tensorflow as tf 
 import copy
+import time
 
 
 def update():
-    for episode in range(300):
+    for episode in range(1000):
         # initial state
-        s = 0
+
         E = Env()
+        s = E.return_s()
         while True:
-            # RL choose action based on observation
-            action = RL.choose_action(s)
-            # RL take action and get next observation and reward
-            s_, reward, done = E.step(action)
-            print(action, reward)
-            # RL learn from this transition
-            RL.learn(s, action, reward, s + 2) # Multi-steps learning +2 so, N-2
-            # swap observation
-            s = s_
-            # break while loop when end of this episode
-            if done:
-                #RL.epsilon += 0.001
-                break
-        if episode %10 == 0:
-            RL.dump_model = copy.copy(RL.model)
+            action = agent.choose_action(s)
+            s, a, r, s_, done = E.step(action)
+            print('do: ', a, "at: ", s, 'get: ', r)
             
-        
-    E = Env()
+            agent.store(s, a, r, s_, done)
+            s = s_
+            if done:
+                print('------------------', r, E.step_num, '------------------')
+                break
+
+        if agent.count >= agent.capacity:
+            agent.learn()
+            agent.count = 0
+
+        if episode % 20 == 0:
+            agent.dump_model = copy.copy(agent.model)
+            
+
     print("---------------test---------------")
-    RL.m.bias_noisy = False
-    RL.m.weight_noisy = False
-    for i in range(E.final_step):
-        q_table = RL.model.predict([i])
-        E.step(np.argmax(q_table))
-        print(np.argmax(q_table))
-    print(E.score)
+    E = Env()
+    s = E.return_s()
+    while True:
+        a = np.argmax(agent.model.predict([[s]]))
+        s, a, r, s_, done = E.step(a)
+        s = s_
+        if done:
+            break
+    print(s, r)
+
 
 if __name__ == "__main__":
     env = Env()
-    RL = NoisyQ(actions=list(range(env.n_actions)))
+    agent = Agent(actions=list(range(env.n_actions)))
     update()
     
     

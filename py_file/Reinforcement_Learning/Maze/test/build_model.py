@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 import tensorflow as tf
-from NoisyDense import NoisyDense
+
 
 
 class Build_Model():
@@ -15,7 +15,7 @@ class Build_Model():
         #input layer
         state_input = tf.keras.layers.Input(shape = (self.state_size, ))
         
-        X = tf.keras.layers.Dense(self.neurons, activation = 'tanh')(state_input)
+        X = tf.keras.layers.Dense(self.neurons, activation = 'relu')(state_input)
         
         X = tf.keras.layers.Dense(4, activation = 'linear')(X)
 
@@ -23,5 +23,10 @@ class Build_Model():
         #最後compile
         self.model = tf.keras.models.Model(inputs = state_input, outputs = X)
         return self.model
+
 if __name__ == "__main__":
-    M = Build_Model
+    M = Build_Model(4, 10, 4)
+    model = M.build()
+    inputs = [[1, 1, 1, 1]]
+    a = model([inputs])
+    print(a)
