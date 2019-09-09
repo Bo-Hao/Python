@@ -15,10 +15,8 @@ class Build_Model():
         #input layer
         state_input = tf.keras.layers.Input(shape = (self.state_size, ))
         
-        X = tf.keras.layers.Dense(self.neurons, activation = 'tanh')(state_input)
-        #X = tf.keras.layers.BatchNormalization()(X)
-        X = tf.keras.layers.Dense(self.neurons, activation = 'tanh')(X)
-        #X= tf.keras.layers.BatchNormalization()(X)
+        X = tf.keras.layers.Dense(self.neurons, activation = 'linear')(state_input)
+        X = tf.keras.layers.Dropout(0.2)(X)
         X = tf.keras.layers.Dense(4, activation = 'linear')(X)
        
 

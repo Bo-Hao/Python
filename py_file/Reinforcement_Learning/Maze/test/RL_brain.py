@@ -17,7 +17,7 @@ class QLearningTable:
         self.state_size = 4
         
         # neural network
-        M = Build_Model(4, 20, 4)
+        M = Build_Model(4, 10, 4)
         self.model = M.build()
         self.target_model = copy.copy(self.model)
         self.optimizer = tf.optimizers.Adam(lr = self.lr)

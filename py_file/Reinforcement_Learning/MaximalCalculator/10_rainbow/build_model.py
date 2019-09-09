@@ -19,7 +19,7 @@ class Build_Model():
         state_input = tf.keras.layers.Input(shape = (self.state_size, ))
         D1 = tf.keras.layers.Dense(self.neurons, activation = 'tanh')(state_input)
         
-        #連結層&Noisy Net
+
         d1 = NoisyDense(self.neurons, self.neurons, activation = 'tanh', Noisy = self.Noisy, bias = False)(D1)
         #d2 = NoisyDense(self.neurons, self.neurons, activation = 'tanh', Noisy = self.Noisy, bias = False)(d1)
 
