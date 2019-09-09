@@ -145,24 +145,20 @@ def main():
     with open('/Users/pengbohao/Downloads/2019summer/save.pickle', 'rb') as f:
         points = pickle.load(f)
     p1, p2 = np.array(points[0]), np.array(points[1])
-    p1 = np.array([[p1[i][0], p1[i][1], 1]for i in range(len(p1)) if i not in bad])
-    p2 = np.array([[p2[i][0], p2[i][1], 1]for i in range(len(p2)) if i not in bad])
+    p1 = np.array([[p1[i][0], p1[i][1], 1]for i in range(len(p1))])
+    p2 = np.array([[p2[i][0], p2[i][1], 1]for i in range(len(p2))])
     
-    #E1 = Epipolar(p1, p2)
-    #E2 = Epipolar(pt1, pt2)
-    
-    #F1 = E1.epipolar(method = 'RANSAC')
-    #F2 = E2.epipolar()
+
     
     Fcv2_1, mask = cv2.findFundamentalMat(p1, p2, method = cv2.RANSAC)
-    #Fcv2_2 = cv2.findFundamentalMat(pt1, pt2, method = cv2.FM_8POINT)
+
+       
+    #drawepiline(Fcv2_1.T, p2, p1, im2)
+    #rawepiline(Fcv2_1, p1, p2, im1)
+
+    plt.imshow(im2)
+    plt.scatter(p2[:, 0], p2[:, 1], s = 2, c = "red")
+    plt.show()
     
 
-    
-    #Es1 = np.dot(np.dot(I, F1), I.T)
-    #Escv2_1 = np.dot(np.dot(I, Fcv2_1[0]), I)    
-    drawepiline(Fcv2_1.T, p2, p1, im2)
-    drawepiline(Fcv2_1, p1, p2, im1)
-
-    
-
+main()
