@@ -8,7 +8,7 @@ from Memory import Memory
 import copy 
 
 class QLearningTable:
-    def __init__(self, actions, learning_rate=0.01, reward_decay=0.3, e_greedy=0.4):
+    def __init__(self, actions, learning_rate=0.001, reward_decay=0.9, e_greedy=0.4):
         self.actions = actions  # a list
         self.lr = learning_rate
         self.gamma = reward_decay
@@ -17,11 +17,11 @@ class QLearningTable:
         self.state_size = 4
         
         # neural network
-        M = Build_Model(4, 10, 4)
+        M = Build_Model(4, 4, 4)
         self.model = M.build()
         self.target_model = copy.copy(self.model)
         self.optimizer = tf.optimizers.Adam(lr = self.lr)
-        self.epochs = 2
+        self.epochs = 1
 
         # memory
         self.capacity = 200
@@ -30,7 +30,6 @@ class QLearningTable:
         
 
     def choose_action(self, s):
-        
         # action selection
         if np.random.uniform() < self.epsilon:
             # choose best action
@@ -47,6 +46,7 @@ class QLearningTable:
 
     def store_memory(self, s, a, r, s_):
         if r in [1, -1]:
+            self.memory.add(100, [s, a, r, s_])
             self.memory.add(100, [s, a, r, s_])
         else:
             self.memory.add(1, [s, a, r, s_])

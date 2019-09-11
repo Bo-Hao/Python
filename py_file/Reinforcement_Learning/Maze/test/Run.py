@@ -3,11 +3,17 @@ from RL_brain import QLearningTable
 import numpy as np 
 import copy
 
+global state_space
+state_space = []
+
 def update():
+    
     for episode in range(300):
         # initial observation
         s = env.reset()
         while True:
+            if s not in state_space:
+                state_space.append(s)
             # fresh env
             env.render()
             # RL choose action based on observation
@@ -21,8 +27,8 @@ def update():
             if RL.store_times % 50 == 0: 
                 RL.target_model = copy.copy(RL.model)
                 RL.learn()
-                
-                RL.epsilon += 0.01
+                if RL.epsilon < 0.9:
+                    RL.epsilon += 0.01
                 print('decay', RL.epsilon)
             if  RL.store_times % 200 == 0:
                 RL.target_model = copy.copy(RL.model)
@@ -38,6 +44,7 @@ def update():
     # end of game
     print('game over')
     env.destroy()
+
 
 
 def test():
@@ -56,8 +63,13 @@ def test():
         # break while loop when end of this episode
         if done:
             break
-    print('test over')
+    result = 'win' if r == 1 else 'lose'
+    print('test over', result)
     env.destroy()
+    s_s = sorted(state_space)
+    for s in s_s:
+        print(s, RL.model.predict([[s]])[0])
+        
 
 
 if __name__ == "__main__":

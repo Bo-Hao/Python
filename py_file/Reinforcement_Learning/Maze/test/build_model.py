@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 import tensorflow as tf
-
+from NoisyDense import NoisyDense
 
 
 class Build_Model():
@@ -14,10 +14,10 @@ class Build_Model():
     def build(self):
         #input layer
         state_input = tf.keras.layers.Input(shape = (self.state_size, ))
-        
-        X = tf.keras.layers.Dense(self.neurons, activation = 'linear')(state_input)
-        X = tf.keras.layers.Dropout(0.2)(X)
-        X = tf.keras.layers.Dense(4, activation = 'linear')(X)
+ 
+        X = NoisyDense(self.neurons, activation = 'tanh', Noisy = False, bias = False)(state_input)
+        X = tf.keras.layers.Dropout(0.4)(X)
+        X = NoisyDense(4, activation = 'linear', Noisy = False, bias = False)(X)
        
 
         

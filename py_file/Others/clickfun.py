@@ -60,7 +60,7 @@ class Clickit():
 
 
 
-C1 = Clickit('/Users/pengbohao/Downloads/2019summer/IMG_2881.JPG')
+'''C1 = Clickit('/Users/pengbohao/Downloads/2019summer/IMG_2881.JPG')
 c1 = C1.clickfun()
 
 C2 = Clickit('/Users/pengbohao/Downloads/2019summer/IMG_2882.JPG')
@@ -70,9 +70,19 @@ c2 = C2.clickfun()
 import pickle
 with open('/Users/pengbohao/Downloads/2019summer/save.pickle', 'wb') as f:
     pickle.dump([c1, c2], f)
+'''
+
+if __name__ == "__main__":
+    C1 = Clickit('/Users/pengbohao/Downloads/2019summer/IMG_2881.JPG')
+    c1 = C1.clickfun()
+
+    C2 = Clickit('/Users/pengbohao/Downloads/2019summer/IMG_2882.JPG')
+    c2 = C2.clickfun()
 
 
-
+    import pickle
+    with open('/Users/pengbohao/Downloads/2019summer/save.pickle', 'wb') as f:
+        pickle.dump([c1, c2], f)
 
 
 
