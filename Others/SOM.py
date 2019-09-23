@@ -147,7 +147,7 @@ if __name__ == '__main__':
     
     print("---"*4, "SOM", "---"*4)
     S = SOM(X)
-    S.init(3, 3)
+    S.init(10, 10)
     res = S.fit()
     S.draw()
     S.drawbytarget(Y)

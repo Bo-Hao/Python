@@ -153,12 +153,12 @@ def main():
     Fcv2_1, mask = cv2.findFundamentalMat(p1, p2, method = cv2.RANSAC)
 
        
-    #drawepiline(Fcv2_1.T, p2, p1, im2)
-    #rawepiline(Fcv2_1, p1, p2, im1)
+    drawepiline(Fcv2_1.T, p2, p1, im2, N= 12)
+    drawepiline(Fcv2_1, p1, p2, im1, N=12)
 
-    plt.imshow(im2)
+    '''plt.imshow(im2)
     plt.scatter(p2[:, 0], p2[:, 1], s = 2, c = "red")
-    plt.show()
+    plt.show()'''
     
 
 main()
