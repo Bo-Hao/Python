@@ -150,6 +150,6 @@ if __name__ == '__main__':
     S.init(10, 10)
     res = S.fit()
     S.draw()
-    S.drawbytarget(Y)
+
 
     

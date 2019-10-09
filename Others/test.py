@@ -1,39 +1,22 @@
-import threading 
-import time 
-
-class test():
-    def __init__(self):
-        self.ind = True
-        self.i = 1
-    def thread1(self):
-        while True:
-            if self.ind == True:
-                print("thread 1 print", self.i)
-                self.i += 1
-                self.ind = False
-            if self.i > 1000:
-                break
+from sklearn import datasets
+import numpy as np
+import matplotlib.pyplot as plt
+from math import *
 
 
-    def thread2(self):
-        while True:
-            if self.ind == False:
-                print("thread 2 print", self.i)
-                self.i += 1
-                self.ind = True
-            if self.i > 1000:
-                break
-
-    def run(self):
-        thread1 = threading.Thread(target = self.thread1)
-        thread2 = threading.Thread(target = self.thread2)
-
-        thread1.start()
-        thread2.start()
 
 
-if __name__ == "__main__":
-    t = time.time()
-    t = test()
-    t.run()
-    print(t - time.time())
+iris = datasets.load_iris()
+X = iris.data
+Y = iris.target
+
+from sklearn.decomposition import PCA
+
+print("---"*4, 'PCA', "---"*4)
+pca = PCA(n_components=2)
+pcapoints = pca.fit(X).transform(X)
+print(pcapoints)
+
+'''plt.scatter(pcapoints[:, 0], pcapoints[:, 1], c = Y)
+plt.show()
+'''
