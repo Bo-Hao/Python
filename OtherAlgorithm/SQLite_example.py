@@ -15,7 +15,6 @@ c.execute('''CREATE TABLE COMPANY
 print("Table created successfully")
 
 
-
 c.execute("INSERT INTO COMPANY (ID,NAME,AGE,ADDRESS,SALARY) \
       VALUES (1, 'Paul', 32, 'California', 20000.00 )");
 
@@ -30,23 +29,23 @@ c.execute("INSERT INTO COMPANY (ID,NAME,AGE,ADDRESS,SALARY) \
 
 conn.commit()
 print("Records created successfully")
-conn.close()
+#conn.close()
 
 
 
 c = conn.cursor()
-print "Opened database successfully";
+print("Opened database successfully");
 
 c.execute("UPDATE COMPANY set SALARY = 25000.00 where ID=1")
 conn.commit()
-print "Total number of rows updated :", conn.total_changes
+print("Total number of rows updated :", conn.total_changes)
 
 cursor = conn.execute("SELECT id, name, address, salary  from COMPANY")
 for row in cursor:
-   print "ID = ", row[0]
-   print "NAME = ", row[1]
-   print "ADDRESS = ", row[2]
-   print "SALARY = ", row[3], "\n"
+   print("ID = ", row[0])
+   print("NAME = ", row[1])
+   print("ADDRESS = ", row[2])
+   print("SALARY = ", row[3], "\n")
 
-print "Operation done successfully";
+print("Operation done successfully");
 conn.close()
