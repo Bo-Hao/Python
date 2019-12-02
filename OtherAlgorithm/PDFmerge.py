@@ -1,5 +1,3 @@
-
-
 import os
 import os.path
 from PyPDF2 import PdfFileReader,PdfFileWriter
@@ -22,7 +20,7 @@ def MergePDF(filepath,outfile):
     pdf_fileName = getFileName(filepath)
     pdf_fileName = sorted(pdf_fileName)
     for each in pdf_fileName:
-        input = PdfFileReader(open(each, "rb"))
+        input = PdfFileReader(open(each, "rb"), strict = False)
         if input.isEncrypted == True:
             input.decrypt("map")
 
@@ -46,7 +44,7 @@ def MergePDF(filepath,outfile):
 
 
 if __name__ == '__main__':
-    file_dir = r'/Users/pengbohao/Downloads/英文履歷/PhD Student in the Distributed Systems Group/SinglePDF'
+    file_dir = r'/Users/pengbohao/Desktop/filee'
     out=u"application.pdf"
     MergePDF(file_dir,out)
 
