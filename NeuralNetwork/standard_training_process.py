@@ -1,12 +1,11 @@
 import tensorflow as tf
 from tensorflow.compat.v1.losses import huber_loss
 from tensorflow.compat.v1.train import get_or_create_global_step
-import numpy as np
 from decorator import timecost
 
 class test():
     def __init__(self):
-        self.lr = 0.01
+        self.lr = 0.1
         self.neuron = 3
         self.shape = (1, )
         self.output = 1
@@ -46,4 +45,36 @@ class test():
 
 
 if __name__ == "__main__":
-    print()
+    import numpy as np
+    import matplotlib.pyplot as plt 
+    from sklearn.model_selection import train_test_split
+    import pickle
+
+
+    with open("regression_2degree_fakedata.pickle", 'rb') as f:
+        data = pickle.load(f)
+    X_train, X_test, y_train, y_test = train_test_split(data[0], data[1], test_size = 0.2, random_state = 0)
+    
+    t = test()
+    M = t.build_model()
+
+    
+    for i in range(1000):
+        t.train(M, X_train, y_train)
+    l = 0
+    for i in range(len(X_test)):
+        invector = np.array([[X_test[i]]])
+        l += huber_loss(M(invector)[0][0], y_test[i])
+    print(l/len(X_test))
+
+
+
+
+
+
+plt.scatter(X_train, y_train, c = 'green')
+for i in range(len(X_test)):
+    x = np.array([[X_test[i]]])
+    plt.scatter(x, M(x), c = 'red')
+
+plt.show()
