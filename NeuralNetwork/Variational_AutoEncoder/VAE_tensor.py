@@ -5,6 +5,7 @@ import numpy as np
 from resamplenet import ResampleNet
 
 
+
 class VAE():
     def __init__(self):
         self.lr = 0.01
@@ -23,55 +24,58 @@ class VAE():
         distribution_mu = tf.keras.layers.Dense(self.distribution_number, activation = "linear")(encoder)
         distribution_var = tf.keras.layers.Dense(self.distribution_number, activation = "relu")(encoder)
 
-        eps = tf.random.normal([self.distribution_number, ])
-
-        multiplier = tf.constant([0.5])
-        std = tf.keras.layers.Multiply()([multiplier, distribution_var])
+        #multiplier = tf.constant([0.5])
+        #std = tf.keras.layers.Multiply()([multiplier, distribution_var])
+        std = tf.multiply(0.5, distribution_var)
         std = tf.keras.activations.exponential(std)
-        
         epstd = ResampleNet()(std)
-        #epstd = tf.keras.layers.Multiply()([eps, std])
-        #epstd = tf.multiply(std, eps)
         z = tf.keras.layers.Add()([distribution_mu, epstd])
 
         decoder = tf.keras.layers.Dense(self.neuron, activation = "linear")(z)
         decoder = tf.keras.layers.Dense(self.neuron, activation = "linear")(decoder)
         d_out = tf.keras.layers.Dense(self.inoutput_dim, activation = 'linear')(decoder)
 
-        self.m1 = tf.keras.models.Model(encoder_input, distribution_mu)
-        self.m2 = tf.keras.models.Model(encoder_input, distribution_var)
-        self.m3 = tf.keras.models.Model(encoder_input, std)
-        self.m4 = tf.keras.models.Model(encoder_input, epstd)
-        self.m5 = tf.keras.models.Model(encoder_input, z)
 
         self.training_model = tf.keras.models.Model(encoder_input, d_out)
 
-        '''self.encoder = tf.keras.models.Model(encoder_input, latent)
+        self.encoder = tf.keras.models.Model(encoder_input, [distribution_mu, distribution_var])
+        self.zencoder = tf.keras.models.Model(encoder_input, z)
 
-        decoder_input = tf.keras.Input(shape = (self.inoutput_dim, )) # Extra input layer
+        decoder_input = tf.keras.Input(shape = (self.distribution_number, )) # Extra input layer
         d = self.training_model.layers[-3](decoder_input)
         d = self.training_model.layers[-2](d)
         d = self.training_model.layers[-1](d)
 
-        self.decoder = tf.keras.models.Model(decoder_input, d)'''
-    
-    
-    def _loss(self, x, y):
+        self.decoder = tf.keras.models.Model(decoder_input, d)
+
+
+    def _loss(self, x):
         shape1, shape2 = len(x), len(x[0])
         x = np.array(x).reshape((shape1, shape2))
-        y_ = self.training_model(x)
+        x_ = self.training_model(x)
+        mu, logvar = self.encoder(x)
 
-        loss = tf.compat.v1.losses.mean_squared_error(y_, y)
-        return loss
+        mse_loss = tf.compat.v1.losses.mean_squared_error(x_, x)
+
+
+        mu2 = tf.multiply(tf.pow(mu, 2), -1)
+        var = tf.multiply(tf.exp(logvar), -1)
+        kl = tf.add(tf.add(mu2, var), tf.add(logvar, 1))
+        kl_loss = tf.multiply(tf.reduce_sum(kl), -0.5)
         
-    def _grad(self, inputs, targets):
+        #kl_loss = -0.5*tf.reduce_sum(logvar-tf.square(mu)-tf.exp(logvar)+1)
+
+        
+        return mse_loss, kl_loss/len(x)
+        
+    def _grad(self, x):
         with tf.GradientTape() as tape:
-            loss_value = self._loss(inputs, targets)
+            loss_value = self._loss(x)
             #self.epoch_loss_avg(loss_value)
             return tape.gradient(loss_value, self.training_model.trainable_variables)
 
-    def train(self, x, y):
-        grads = self._grad(x, y)
+    def train(self, x):
+        grads = self._grad(x)
         self.optimizer.apply_gradients(
             zip(grads, self.training_model.trainable_variables),
             get_or_create_global_step())
@@ -82,29 +86,17 @@ if __name__ == "__main__":
     A = VAE()
     A.build_model()
 
-    #x = [[1, 2, 3], [2, 3, 4], [3, 4, 5]]
-    x = [[1, 2, 3]]
-    y = [[1, 2, 3], [2, 3, 4], [3, 4, 5]]
+    x = [[1, 2, 3], [2, 3, 4], [3, 4, 5]]
+    #x = [[1, 2, 3]]
+    
     x = np.array(x)
 
-    print(A.m1(x))
-    print(A.m2(x))
-    print('---------------')
-    print(A.m3(x))
-    print(A.m4(x))
-    print(A.m4(x))
-    print(A.m4(x))
-    #print(A.m5(x))
-    print('---------------')
+    print(A.decoder(A.zencoder(x)))
     print(A.training_model(x))
-
-    '''eps = tf.random.normal([3, ])
-    p = tf.multiply(eps, eps)
-    q = tf.add(p, eps)
-    print(eps)
-    print(p)
-    print(q)'''
-    
+    for i in range(100):
+        A.train(x)
+    print("training fininshed")
+    print(A.training_model(x))
     
     
     

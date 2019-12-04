@@ -17,5 +17,6 @@ class ResampleNet(tf.keras.layers.Layer):
         super(ResampleNet, self).build(input_shape)
         
     def call(self, inputs):
-        random_weights = tf.random.normal([int(inputs.shape[-1]), 1])
-        return tf.matmul(inputs, random_weights)
+        random_weights = tf.random.normal([int(inputs.shape[-1]), ])
+        #return tf.multiply(inputs, random_weights)
+        return inputs
