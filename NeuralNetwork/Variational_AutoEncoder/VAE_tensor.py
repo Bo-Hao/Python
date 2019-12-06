@@ -17,31 +17,37 @@ class VAE():
 
 
     def build_model(self):
+        # encode net
         encoder_input = tf.keras.Input(shape = (self.inoutput_dim, ))
         encoder = tf.keras.layers.Dense(self.neuron, activation = "linear")(encoder_input)
         encoder = tf.keras.layers.Dense(self.neuron, activation = "linear")(encoder)
-        
+
+        # distribution        
         distribution_mu = tf.keras.layers.Dense(self.distribution_number, activation = "linear")(encoder)
-        distribution_var = tf.keras.layers.Dense(self.distribution_number, activation = "relu")(encoder)
+        distribution_logvar = tf.keras.layers.Dense(self.distribution_number, activation = "relu")(encoder)
 
-        #multiplier = tf.constant([0.5])
-        #std = tf.keras.layers.Multiply()([multiplier, distribution_var])
-        std = tf.multiply(0.5, distribution_var)
+
+        std = tf.multiply(0.5, distribution_logvar)
         std = tf.keras.activations.exponential(std)
+        
+        # random normal sample 
         epstd = ResampleNet()(std)
-        z = tf.keras.layers.Add()([distribution_mu, epstd])
 
+        # mu + std * epsilon
+        z = tf.keras.layers.Add()([distribution_mu, epstd])
+        
+        # decode net
         decoder = tf.keras.layers.Dense(self.neuron, activation = "linear")(z)
         decoder = tf.keras.layers.Dense(self.neuron, activation = "linear")(decoder)
         d_out = tf.keras.layers.Dense(self.inoutput_dim, activation = 'linear')(decoder)
 
-
+        
         self.training_model = tf.keras.models.Model(encoder_input, d_out)
 
-        self.encoder = tf.keras.models.Model(encoder_input, [distribution_mu, distribution_var])
+        self.encoder = tf.keras.models.Model(encoder_input, [distribution_mu, distribution_logvar])
         self.zencoder = tf.keras.models.Model(encoder_input, z)
 
-        decoder_input = tf.keras.Input(shape = (self.distribution_number, )) # Extra input layer
+        decoder_input = tf.keras.Input(shape = (self.distribution_number, )) # Extra input layer take z as input
         d = self.training_model.layers[-3](decoder_input)
         d = self.training_model.layers[-2](d)
         d = self.training_model.layers[-1](d)
@@ -55,23 +61,17 @@ class VAE():
         x_ = self.training_model(x)
         mu, logvar = self.encoder(x)
 
+        # Mean square error as loss function 
         mse_loss = tf.compat.v1.losses.mean_squared_error(x_, x)
 
+        # KL divergence as loss function 
+        kl_loss = -0.5*tf.reduce_sum(logvar-tf.square(mu)-tf.exp(logvar)+1)
 
-        mu2 = tf.multiply(tf.pow(mu, 2), -1)
-        var = tf.multiply(tf.exp(logvar), -1)
-        kl = tf.add(tf.add(mu2, var), tf.add(logvar, 1))
-        kl_loss = tf.multiply(tf.reduce_sum(kl), -0.5)
-        
-        #kl_loss = -0.5*tf.reduce_sum(logvar-tf.square(mu)-tf.exp(logvar)+1)
-
-        
         return mse_loss, kl_loss/len(x)
         
     def _grad(self, x):
         with tf.GradientTape() as tape:
             loss_value = self._loss(x)
-            #self.epoch_loss_avg(loss_value)
             return tape.gradient(loss_value, self.training_model.trainable_variables)
 
     def train(self, x):
