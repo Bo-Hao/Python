@@ -1,9 +1,7 @@
 import tensorflow as tf 
 import numpy as np 
 import decorator
-
 from tensorflow.compat.v1.train import get_or_create_global_step
-
 
 
 class GAN():
@@ -42,8 +40,8 @@ class GAN():
 
     def _loss(self, model, x, y):
         x = np.array(x)
-        y_ = model(x)
-        mse_loss = tf.reduce_sum(tf.square(tf.subtract(y, y_)))
+        y_ = model(x) 
+        mse_loss = tf.compat.v1.log(tf.reduce_sum(tf.square(tf.subtract(y, y_))))
         return mse_loss
 
     def _grad(self, model, x, y):
