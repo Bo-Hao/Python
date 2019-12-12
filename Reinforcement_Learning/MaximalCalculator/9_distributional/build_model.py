@@ -1,6 +1,11 @@
 
 import tensorflow as tf
+import os, sys 
+os.chdir("/Users/pengbohao/Python_code/for_import")
+sys.path.append(".")
 from NoisyDense import NoisyDense
+import decorator
+os.chdir(os.path.dirname(__file__))
 import copy
 
 class Build_Model():

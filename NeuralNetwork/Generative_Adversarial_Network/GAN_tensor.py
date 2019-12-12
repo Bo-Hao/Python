@@ -1,3 +1,10 @@
+import os, sys 
+os.chdir("/Users/pengbohao/Python_code/for_import")
+sys.path.append(".")
+import NoisyDense
+import decorator
+os.chdir(os.path.dirname(__file__))
+
 import tensorflow as tf 
 import numpy as np 
 import decorator

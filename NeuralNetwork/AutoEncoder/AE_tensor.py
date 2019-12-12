@@ -1,3 +1,10 @@
+import os, sys 
+os.chdir("/Users/pengbohao/Python_code/for_import")
+sys.path.append(".")
+import NoisyDense
+import decorator
+os.chdir(os.path.dirname(__file__))
+
 import tensorflow as tf
 from tensorflow.compat.v1.train import get_or_create_global_step
 from tensorflow.compat.v1.losses import huber_loss
@@ -60,7 +67,7 @@ class AE():
 
 
 if __name__ == "__main__":
-    A = AE()
+    '''A = AE()
     A.build_model()
 
     x = [[1, 2, 3], [2, 3, 4], [3, 4, 5]]
@@ -71,7 +78,7 @@ if __name__ == "__main__":
     for i in range(100):
         A.train(x, y)
     print(A.training_model(x))
-    print('train finished')
+    print('train finished')'''
     
     
     

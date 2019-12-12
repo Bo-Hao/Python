@@ -1,3 +1,10 @@
+import os, sys 
+os.chdir("/Users/pengbohao/Python_code/for_import")
+sys.path.append(".")
+import NoisyDense
+import decorator
+os.chdir(os.path.dirname(__file__))
+
 import tensorflow as tf
 from tensorflow.compat.v1.train import get_or_create_global_step
 from tensorflow.compat.v1.losses import huber_loss
