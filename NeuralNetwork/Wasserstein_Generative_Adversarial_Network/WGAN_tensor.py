@@ -12,12 +12,12 @@ from tensorflow.compat.v1.train import get_or_create_global_step
 
 
 class WGAN():
-    def __init__(self):
+    def __init__(self, G_input_shape = 3, D_input_shape = 5, D_output_shape = 1, neuron = 7):
         self.lr = 0.01
-        self.G_input_shape = 3
-        self.D_input_shape = 5
-        self.neuron = 7
-        self.D_output_shape = 1
+        self.G_input_shape = G_input_shape
+        self.D_input_shape = D_input_shape
+        self.neuron = neuron
+        self.D_output_shape = D_output_shape
         self.C = float(1)
 
         self.optimizer = tf.optimizers.RMSprop(learning_rate = self.lr)
@@ -50,14 +50,16 @@ class WGAN():
         # JS divergence
         x = np.array(x)
         y_ = model(x)
-        mse_loss = tf.reduce_sum(tf.square(tf.subtract(y, y_)))
+        _loss_mse = tf.reduce_sum(tf.square(tf.subtract(y, y_)))
         
 
-        penalty = self._loss_clip_weight(model)
-        return mse_loss+penalty
+        _loss_penalty = self._loss_weight(model)
+        self.loss_value = _loss_mse + _loss_penalty
+        return self.loss_value
 
-    def _loss_clip_weight(self, model):
-        penalty = 0
+
+    def _loss_weight(self, model):
+        _loss_penalty = 0
         for layer in model.layers:
             s = layer.input_shape
             if len(s) == 2:
@@ -65,10 +67,10 @@ class WGAN():
                 ones = np.array([[1. for i in range(ss)]])
                 weight = layer(ones)
                 weight_loss = tf.square(tf.maximum(tf.abs(weight) - self.C, 0.0))/ss
-                penalty = tf.add(penalty, tf.reduce_sum(weight_loss))
-            print(penalty)
+                _loss_penalty = tf.add(_loss_penalty, tf.reduce_sum(weight_loss))
 
-        return penalty
+
+        return _loss_penalty
 
 
     def _grad(self, model, x, y):
@@ -78,9 +80,10 @@ class WGAN():
             return tape.gradient(loss_value, model.trainable_variables)
 
 
-    def train_disciminator(self, x, y):
+
+    def train_disciminator(self, gx, y):
         self.discriminator.trainable = True
-        grads = self._grad(self.discriminator, x, y)
+        grads = self._grad(self.discriminator, gx, y)
         self.optimizer.apply_gradients(
             zip(grads, self.discriminator.trainable_variables),
             get_or_create_global_step())
@@ -98,7 +101,7 @@ class WGAN():
 if __name__ == "__main__":
     import numpy as np 
     r = [[1, 2, 3, 4, 5], [2, 3, 4, 5, 6], [3, 4, 5, 6, 7]]
-    x = [np.random.normal(size = 3) for i in range(3)]
+    x = [np.random.normal(size = 5) for i in range(3)]
 
     r = np.array(r)
     x = np.array(x)
@@ -106,8 +109,8 @@ if __name__ == "__main__":
     G = WGAN()
     G.build_model()
     
-    
     for i in range(100):
-        G.train_generator(x, [[0], [0], [0]])
+        G.train_disciminator(x, [[0], [0], [0]])
     print("training finished")
     
+

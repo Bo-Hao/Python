@@ -19,3 +19,7 @@ def report_success():
     server.quit()
 
     print('Email sent!')
+
+
+if __name__ == "__main__":
+    report_success()
