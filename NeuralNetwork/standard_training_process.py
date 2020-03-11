@@ -1,7 +1,7 @@
 import tensorflow as tf
 from tensorflow.compat.v1.losses import huber_loss
 from tensorflow.compat.v1.train import get_or_create_global_step
-from decorator import timecost
+
 
 class test():
     def __init__(self):
