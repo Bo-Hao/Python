@@ -7,14 +7,15 @@ mp.dps = 53
 
     
 def C_(a, b):
-    return math.factorial(int(a)) / math.factorial(int(a-b)) / math.factorial(int(b))
+    
+    return factorial(int(a)) / factorial(int(a-b)) / factorial(int(b))
 
 
 class CMLE():
     def __init__(self):
-        self.S = 100
+        self.S = 300
         self.T = 100
-        self.t = 2
+        self.t = 10
         
         
         self.create_data()
@@ -101,10 +102,15 @@ class CMLE():
 if __name__ == "__main__":
   
     C = CMLE()
+    C.S = 300
 
-    x0 = [0.00001, 0.0001]
     
-    Result = minimize(C.ln_L, x0, method='SLSQP')
+    C.T = 100
+    C.t = 10
+
+    x0 = [1, 1]
+    
+    Result = minimize(C.ln_L, x0)
     
     print(Result.x, Result.fun, Result.success)
 
@@ -113,13 +119,14 @@ if __name__ == "__main__":
     D = len(C.D_list)
     T = C.T
     t = C.t
+    #alpha, beta = Result.x[0]/Result.x[0], Result.x[1]/Result.x[0]
     alpha, beta = Result.x[0], Result.x[1]
     term1 = 1 - gamma(alpha + beta) * gamma(T + beta) / gamma(beta) / gamma(T + alpha + beta)
     term2 = 1 - gamma(alpha + beta) * gamma(t + beta) / gamma(beta) / gamma(t + alpha + beta)
 
     S_CMLE = D * (term1/term2)
 
-    print(S_CMLE)
+    print(S_CMLE,"\n", alpha, beta)
 
 
 
